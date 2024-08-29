@@ -10,10 +10,15 @@ public class Player_Controller : MonoBehaviour
     [SerializeField]
     private InputActionReference move, jump, dash;
     Rigidbody2D Body2D;
+    PhysicsMaterial2D Slip;
+    PhysicsMaterial2D Stick;
 
+    bool is_clinging;
     bool is_dashing;
     bool is_in_cooldown;
     bool is_on_ground;
+    bool is_walljumping;
+    bool is_wallrunning;
 
     int dash_count;
     int jump_count;
@@ -23,9 +28,14 @@ public class Player_Controller : MonoBehaviour
     float dash_timer;
     float default_dash_timer;
     float dash_cooldown_timer;
+    float default_walljump_timer;
+    float walljump_timer;
     float default_gravity;
+    float direction_held;
     float hori_speed;
     float jump_speed;
+    float walk_speed;
+    float walljump_speed;
 
     // Method allows calls to other methods when inputs are provided
     private void OnEnable()
@@ -42,10 +52,15 @@ public class Player_Controller : MonoBehaviour
         PlayerInputController = new InputController();
         PlayerInputController.Enable();
         Body2D = GetComponent<Rigidbody2D>();
+        Slip = Resources.Load<PhysicsMaterial2D>("Materials/Slip");
+        Stick = Resources.Load<PhysicsMaterial2D>("Materials/Stick");
 
+        is_clinging = false;
         is_dashing = false;
         is_in_cooldown = false;
         is_on_ground = false;
+        is_walljumping = false;
+        is_wallrunning = false;
 
         dash_count = 1;
         jump_count = 1;
@@ -55,7 +70,11 @@ public class Player_Controller : MonoBehaviour
         default_dash_timer = 0.15f;
         default_gravity = 2f;
         dash_timer = default_dash_timer;
+        default_walljump_timer = 0.2f;
+        walljump_timer = default_walljump_timer;
         jump_speed = 10f;
+        walk_speed = 5f;
+        walljump_speed = 7f;
     }
 
     // Update is called once per frame
@@ -63,14 +82,13 @@ public class Player_Controller : MonoBehaviour
     {
         // Set the player's velocity using hori_speed if they are not performing
         // a special move
-        if (!is_dashing)
+        if (!is_dashing && !is_walljumping && !is_wallrunning)
         {
             Body2D.velocity = new Vector2(hori_speed, Body2D.velocity.y);
-            
+
             // If the player is in cooldown, they can only move or jump
             if (is_in_cooldown)
             {
-                Debug.Log(cooldown_timer);
                 cooldown_timer -= Time.deltaTime;
                 if (cooldown_timer < 0)
                 {
@@ -79,7 +97,7 @@ public class Player_Controller : MonoBehaviour
             }
         }
         // Handle the player's dash when is_dashing is true
-        else
+        else if (is_dashing)
         {
             // Count down on dash_timer
             dash_timer -= Time.deltaTime;
@@ -90,9 +108,29 @@ public class Player_Controller : MonoBehaviour
                 is_dashing = false;
                 Body2D.gravityScale = default_gravity;
                 dash_timer = default_dash_timer;
-                Body2D.velocity = new Vector2(0f, 0f);
+                Body2D.velocity = Vector2.zero;
                 is_in_cooldown = true;
                 cooldown_timer = dash_cooldown_timer;
+            }
+        }
+        // Handle the player's walljump when is_walljumping is true
+        else if (is_walljumping)
+        {
+            // Count down on walljump_timer
+            walljump_timer -= Time.deltaTime;
+            // If walljump_timer is complete
+            if (walljump_timer <= 0f)
+            {
+                // Re-set up the player's walljump variables
+                is_walljumping = false;
+                walljump_timer = default_walljump_timer;
+                // If the direction the player is holding is the same as the direction
+                // the player was holding to move into the wall
+                if (Mathf.Sign(move.action.ReadValue<Vector2>().x) == direction_held)
+                {
+                    // Stop the player from climbing infinitely
+                    Body2D.velocity = Vector2.zero;
+                }
             }
         }
     }
@@ -102,10 +140,10 @@ public class Player_Controller : MonoBehaviour
     {
         // Math so that both a controller joystick and keyboard feel the same
         // If the joystick is not pushed far enough, do not accept the input for moving
-        if (Mathf.Abs(move.action.ReadValue<Vector2>().x) > 0.99f)
+        if (Mathf.Abs(move.action.ReadValue<Vector2>().x) > 0.97f)
         {
             // Multiply the direction that the player wants to go by a constant value
-            hori_speed = 5 * Mathf.Sign(move.action.ReadValue<Vector2>().x);
+            hori_speed = walk_speed * Mathf.Sign(move.action.ReadValue<Vector2>().x);
         }
         else
         {
@@ -118,7 +156,7 @@ public class Player_Controller : MonoBehaviour
     private void StartJump(InputAction.CallbackContext obj)
     {
         // If the player is on the ground and is not dashing
-        if ((is_on_ground || jump_count > 0) && !is_dashing)
+        if ((is_on_ground || jump_count > 0) && !is_dashing && !is_clinging)
         {
             // Add jump_speed to the player's velocity.y
             Body2D.velocity = new Vector2(Body2D.velocity.x, jump_speed);
@@ -129,6 +167,17 @@ public class Player_Controller : MonoBehaviour
                 jump_count--;
             }
         }
+        // If the player is clinging on a wall
+        else if (is_clinging)
+        {
+            // If the player's joystick/ d-pad is not being held in neutral
+            if (direction_held != 0f)
+            {
+                // Set the player up to walljump
+                Body2D.velocity = new Vector2(hori_speed * -1, walljump_speed);
+                is_walljumping = true;
+            }
+        }
     }
 
     // Called when the jump key/ button is released
@@ -136,10 +185,13 @@ public class Player_Controller : MonoBehaviour
     {
         // If the player has not reached the apex of their jump
         // or if the player has already double jumped
-        if (Mathf.Sign(Body2D.velocity.y) == 1 && jump_count > 0)
+        if (!is_walljumping)
         {
-            // Set the player's velocity.y to 0
-            Body2D.velocity = new Vector2(Body2D.velocity.x, 0f);
+            if (Mathf.Sign(Body2D.velocity.y) == 1 && jump_count > 0)
+            {
+                // Set the player's velocity.y to 0
+                Body2D.velocity = new Vector2(Body2D.velocity.x, 0f);
+            }
         }
     }
 
@@ -150,37 +202,65 @@ public class Player_Controller : MonoBehaviour
         // their dash in the air, and is not already in cooldown
         if (!is_dashing && dash_count > 0 && !is_in_cooldown)
         {
-            // Set up the player to be dashing
-            Body2D.velocity = new Vector2(Mathf.Sign(move.action.ReadValue<Vector2>().x) * dash_speed, 0f);
-            Body2D.gravityScale = 0f;
-            is_dashing = true;
-
-            // If the player is in the air, decrement dash_count
-            if (!is_on_ground)
+            if (!(is_clinging && Mathf.Sign(move.action.ReadValue<Vector2>().x) == direction_held))
             {
-                dash_count--;
+                // Set up the player to be dashing
+                Body2D.velocity = new Vector2(Mathf.Sign(move.action.ReadValue<Vector2>().x) * dash_speed, 0f);
+                Body2D.gravityScale = 0f;
+                is_dashing = true;
+
+                // If the player is in the air, decrement dash_count
+                if (!is_on_ground)
+                {
+                    dash_count--;
+                }
             }
         }
     }
 
-    // Detects when the player touches floor
-    private void OnCollisionEnter2D(Collision2D collision)
+    // Detects when the player touches floors or walls
+    private void OnCollisionStay2D(Collision2D collision)
     {
-        // Reset the player's resources
-        if (collision.gameObject.tag == "Floor")
+        // Reset the player's resources if they are standing on flat ground
+        if (collision.gameObject.tag == "Floor" && collision.GetContact(0).normal == Vector2.up)
         {
             is_on_ground = true;
             dash_count = 1;
             jump_count = 1;
         }
+        // Make the player cling to the wall if they are up against it
+        else if (collision.gameObject.tag == "Wall" && !is_on_ground)
+        {
+            is_clinging = true;
+
+            // If the player's joystick/ d-pad is being held left or right
+            if (Mathf.Abs(move.action.ReadValue<Vector2>().x) > 0.97f)
+            {
+                // Increase the player's friction so they slide slowly/ stick on walls
+                Body2D.sharedMaterial = Stick;
+                // Save the players held direction into direction_held for later use
+                direction_held = Mathf.Sign(move.action.ReadValue<Vector2>().x);
+            }
+            // If the player's joystick/ d-pad is being held in neutral
+            else
+            {
+                direction_held = 0f;
+            }
+        }
     }
-    
-    // Detects when the player leaves floor
+
+    // Detects when the player leaves floors or walls
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Floor")
         {
             is_on_ground = false;
+        }
+        // Decrease the player's friction so they only slide on walls
+        else if ((collision.gameObject.tag == "Wall"))
+        {
+            is_clinging = false;
+            Body2D.sharedMaterial = Slip;
         }
     }
 }
