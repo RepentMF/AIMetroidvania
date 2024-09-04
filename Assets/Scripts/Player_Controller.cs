@@ -37,7 +37,7 @@ public class Player_Controller : MonoBehaviour
     float walk_speed;
     float walljump_speed;
     float wall_speed;
-    float vert_speed;
+    
 
     // Method allows calls to other methods when inputs are provided
     private void OnEnable()
