@@ -36,6 +36,8 @@ public class Player_Controller : MonoBehaviour
     float jump_speed;
     float walk_speed;
     float walljump_speed;
+    float wall_speed;
+    float vert_speed;
 
     // Method allows calls to other methods when inputs are provided
     private void OnEnable()
@@ -75,11 +77,14 @@ public class Player_Controller : MonoBehaviour
         jump_speed = 10f;
         walk_speed = 5f;
         walljump_speed = 7f;
+        wall_speed = 5f;
     }
 
     // Update is called once per frame
     void FixedUpdate()
-    {
+    {   
+        Debug.Log(Body2D.sharedMaterial);
+
         // Set the player's velocity using hori_speed if they are not performing
         // a special move
         if (!is_dashing && !is_walljumping && !is_wallrunning)
@@ -240,7 +245,16 @@ public class Player_Controller : MonoBehaviour
                 Body2D.sharedMaterial = Stick;
                 // Save the players held direction into direction_held for later use
                 direction_held = Mathf.Sign(move.action.ReadValue<Vector2>().x);
+
+                    
             }
+            // If the player's joystick/ d-pad is being held up
+            else if(move.action.ReadValue<Vector2>().y > .97)
+            {
+                Body2D.velocity = new Vector2(Body2D.velocity.x, wall_speed);
+
+            }
+
             // If the player's joystick/ d-pad is being held in neutral
             else
             {
