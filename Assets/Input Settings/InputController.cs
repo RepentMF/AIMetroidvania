@@ -168,6 +168,17 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""ab0f3430-0f17-4656-9832-7eccf74b8da6"",
+                    ""path"": ""<DualShockGamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""6940af23-8d0f-46f0-9383-18d8cc05f502"",
                     ""path"": ""<Gamepad>/rightTrigger"",
                     ""interactions"": """",
