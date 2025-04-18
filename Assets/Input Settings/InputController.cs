@@ -144,17 +144,6 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""3f7a6210-0084-4430-b688-2590db076838"",
-                    ""path"": ""<Gamepad>/buttonEast"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Joystick"",
-                    ""action"": ""Jump"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""3f2a8c01-f48f-4106-98d1-8d0f37576fba"",
                     ""path"": ""<XInputController>/buttonSouth"",
                     ""interactions"": """",
@@ -177,11 +166,22 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""ab0f3430-0f17-4656-9832-7eccf74b8da6"",
-                    ""path"": ""<DualShockGamepad>/buttonEast"",
+                    ""id"": ""d0ccf32f-4353-42b7-9778-d7a7351e9210"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": ""Gamepad"",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""adcfbb83-b097-4c96-bf6f-e4cb6f891dc6"",
+                    ""path"": ""<DualShockGamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -243,8 +243,8 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""375ab9af-42b8-41d6-b1a9-6b65f07e0705"",
-                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""id"": ""0ef18db3-1e6f-460d-b32e-4ba0831e95cc"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -254,8 +254,8 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""805859ff-bcda-420c-a6d3-0263b7094ddc"",
-                    ""path"": ""<DualShockGamepad>/buttonSouth"",
+                    ""id"": ""78196f59-109b-45f1-aaa1-80f80a0a097b"",
+                    ""path"": ""<DualShockGamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
