@@ -369,6 +369,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4450326983195431852, guid: 989a5b13a7dd0444d9c60f7180edbfe4, type: 3}
+      propertyPath: pogo
+      value: 
+      objectReference: {fileID: 1010827564403406687, guid: fc7c0fe27c1f701439eaa25a98c5083c, type: 3}
+    - target: {fileID: 4450326983195431852, guid: 989a5b13a7dd0444d9c60f7180edbfe4, type: 3}
+      propertyPath: hori_attack1
+      value: 
+      objectReference: {fileID: 4228078070971758833, guid: 6ffcbe421fc7da2468ee035bd666e9ca, type: 3}
     - target: {fileID: 8149367122781374086, guid: 989a5b13a7dd0444d9c60f7180edbfe4, type: 3}
       propertyPath: m_Name
       value: Player

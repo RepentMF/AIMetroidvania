@@ -528,9 +528,12 @@ MonoBehaviour:
   jump: {fileID: 5925563209773416169, guid: 3de43209e41e2a44fb3a5234e78355c1, type: 3}
   dash: {fileID: -5128187193925897176, guid: 3de43209e41e2a44fb3a5234e78355c1, type: 3}
   attack: {fileID: 4711710128742722937, guid: 3de43209e41e2a44fb3a5234e78355c1, type: 3}
-  hori_attack1: {fileID: 1010827564403406687, guid: 6ffcbe421fc7da2468ee035bd666e9ca, type: 3}
+  Body2D: {fileID: 0}
+  hori_attack1: {fileID: 4228078070971758833, guid: 6ffcbe421fc7da2468ee035bd666e9ca, type: 3}
   verti_attack1: {fileID: 1010827564403406687, guid: fc7c0fe27c1f701439eaa25a98c5083c, type: 3}
+  isPogo: 0
   is_attack_present: 0
+  walljump_speed: 0
 --- !u!114 &5280992206820497609
 MonoBehaviour:
   m_ObjectHideFlags: 0

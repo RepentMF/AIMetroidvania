@@ -146,3 +146,4 @@ MonoBehaviour:
   user: {fileID: 0}
   damage: -5
   attackTimer: 0.2
+  pogo: {fileID: 4450326983195431852, guid: 989a5b13a7dd0444d9c60f7180edbfe4, type: 3}

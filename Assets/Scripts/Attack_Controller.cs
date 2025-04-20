@@ -7,9 +7,10 @@ public class Attack_Controller : MonoBehaviour
     // Call components and variables for setup, so we can use them later
     // (Many of our Public variables are being set up in the Unity Editor with predetermined variables/prefabs)
     public Stats_Controller user;
-
+    
     public int damage;
     public float attackTimer;
+    
 
     // Update is called once per frame
     void FixedUpdate()
@@ -36,9 +37,17 @@ public class Attack_Controller : MonoBehaviour
         {
             // Deal damage to our target (and ignore the user-actor as a target)
             Stats_Controller targetStats = collision.gameObject.GetComponent<Stats_Controller>();
+           
             if (targetStats != user)
             {
                 targetStats.currentHealth = targetStats.ModifyStat(targetStats.currentHealth, damage, targetStats.maxHealth);
+                if (user.GetComponent<Player_FSM_Controller>().canPogo)
+                {
+                    user.GetComponent<Player_FSM_Controller>().isPogoing = true;
+                    user.GetComponent<Player_FSM_Controller>().canPogo = false;
+                }
+                
+               
             }
         }
     }

@@ -10,11 +10,13 @@ public class Player_FSM_Controller : MonoBehaviour
     public PlayerState playerState;
     InputController PlayerInputController;
     [SerializeField] private InputActionReference move, jump, dash, attack;
-    Rigidbody2D Body2D;
+    public Rigidbody2D Body2D;
     PhysicsMaterial2D Slip;
     PhysicsMaterial2D Stick;
     public Attack_Controller hori_attack1;
     public Attack_Controller verti_attack1;
+    public bool canPogo;
+    public bool isPogoing;
 
     // is_attack_present is public so Attack_Controller can access it- 
     // we will need to add getters/setters later for security purposes
@@ -42,8 +44,10 @@ public class Player_FSM_Controller : MonoBehaviour
     float hori_speed;
     float jump_speed;
     float walk_speed;
-    float walljump_speed;
+    public float walljump_speed;
     float wall_speed;
+
+    
 
     // Start is called before the first frame update
     void Start()
@@ -76,12 +80,17 @@ public class Player_FSM_Controller : MonoBehaviour
         walljump_speed = 10f;
         wall_speed = 8f;
 
+        canPogo = false;
+        isPogoing = false;
+
         Body2D.gravityScale = default_gravity;
     }
 
     // FixedUpdate is called once per frame
     void FixedUpdate()
     {
+                
+          
         // Allow free movement if state is Stand, Run, Jump, Wallcling, Airborne, or Attack
         if (playerState == PlayerState.stand || playerState == PlayerState.run || playerState == PlayerState.jump || playerState == PlayerState.wallcling || playerState == PlayerState.airborne || playerState == PlayerState.attack)
         {
@@ -108,13 +117,18 @@ public class Player_FSM_Controller : MonoBehaviour
         if (Mathf.Abs(move.action.ReadValue<Vector2>().x) > Mathf.Epsilon)
         {
             hori_speed = walk_speed * Mathf.Sign(move.action.ReadValue<Vector2>().x);
+            direction_x = Mathf.Sign(move.action.ReadValue<Vector2>().x);
         }
         else
         {
             hori_speed = 0f;
         }
+        if (Mathf.Abs(move.action.ReadValue<Vector2>().y) > Mathf.Epsilon)
+        {
+            direction_y = Mathf.Sign(move.action.ReadValue<Vector2>().y);
+        }
     }
-
+        
     // Called when the jump key/button is just pressed
     private void StartJump(InputAction.CallbackContext obj)
     {
@@ -199,12 +213,14 @@ public class Player_FSM_Controller : MonoBehaviour
         // If the player is not already attacking and they are in a Default State...
         if (!is_attack_present && (playerState == PlayerState.stand || playerState == PlayerState.run || playerState == PlayerState.jump || playerState == PlayerState.airborne))
         {
-            // ... store the direction that the player is holding...
-            direction_x = Mathf.Sign(move.action.ReadValue<Vector2>().x);
-            direction_y = Mathf.Sign(move.action.ReadValue<Vector2>().y);
+           
             // ... and spawn either a hori or verti attack
             if (Mathf.Abs(move.action.ReadValue<Vector2>().y) > 0.5f)
             {
+                if (move.action.ReadValue<Vector2>().y < -0.5f)
+                {
+                    canPogo = true;
+                }
                 SpawnAttack(verti_attack1, true);
             }
             else
@@ -227,6 +243,7 @@ public class Player_FSM_Controller : MonoBehaviour
         {
             // ... instantiate a vertical attack
             newAttack.transform.position = new Vector3(transform.position.x, transform.position.y + direction_y, transform.position.z);
+            
         }
         else
         {
@@ -236,7 +253,7 @@ public class Player_FSM_Controller : MonoBehaviour
         // Set is_attack_present to true (this will be reset by the Attack_Controller class)
         is_attack_present = true;
     }
-
+  
     private void ReturnToDefaults()
     {
         // Set the player back to a Default State (standing, running, or airborne)
@@ -337,6 +354,11 @@ public class Player_FSM_Controller : MonoBehaviour
 
     private void Attack()
     {
+        if (isPogoing)
+        {
+            Body2D.velocity = new Vector2(Body2D.velocity.x, jump_speed);
+            isPogoing = false;
+        }
         // Set up the player to change states
         if (!is_attack_present)
         {

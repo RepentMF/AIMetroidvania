@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4722946539465070550}
   - component: {fileID: 1931024160575166279}
   - component: {fileID: 8468157942500000360}
-  - component: {fileID: 1010827564403406687}
+  - component: {fileID: 4228078070971758833}
   m_Layer: 0
   m_Name: Horizontal_Attack
   m_TagString: Player
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1010827564403406687
+--- !u!114 &4228078070971758833
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,3 +146,4 @@ MonoBehaviour:
   user: {fileID: 0}
   damage: -5
   attackTimer: 0.2
+  pogo: {fileID: 4450326983195431852, guid: 989a5b13a7dd0444d9c60f7180edbfe4, type: 3}
